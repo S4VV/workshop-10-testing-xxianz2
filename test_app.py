@@ -35,8 +35,9 @@ class TestWebApp(unittest.TestCase):
         assert response.status_code == 200
 
     def test_no_access_to_profile(self):
-        # TODO: Check that non-logged-in user should be redirected to /login
-        assert False
+        response = self.client.get('/profile', follow_redirects = True)
+        assert response.status_code == 200
+        assert response.request.path == '/login'
 
     def test_register_user(self):
         response = self.client.post('/signup', data = {
@@ -80,7 +81,13 @@ class TestWebApp(unittest.TestCase):
         assert response.status_code == 200 
 
     def test_xss_vulnerability(self):
-        # TODO: Can we store javascript tags in the username field?
-        assert False
+        # There is a DOM-based XSS attack, and use HTML entity encoding can solute it
+        response = self.client.post('/signup', data=dict(
+            email='user@test.com',
+            name='<script>alert("XSS Attack!");</script>',
+            password='test123',
+        ), follow_redirects=True)
+        assert "<script>" not in str(response.data)
+        assert response.status_code == 200
 
-
+    #hi
