@@ -89,5 +89,5 @@ class TestWebApp(unittest.TestCase):
         ), follow_redirects=True)
         assert "<script>" not in str(response.data)
         assert response.status_code == 200
-
     #hi
+
